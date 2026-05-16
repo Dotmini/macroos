@@ -158,10 +158,9 @@ jobs:
 
             const msg_prefix = "Thank you for taking the time to contribute to MacroOS!\n\n";
             if (checklist_len != 0 || infolist_len != 0) {
-              let msg;
+              let msg = msg_prefix;
               let comment_func = comment_id == -1 ? github.rest.issues.createComment : github.rest.issues.updateComment;
               if (checklist_len != 0) {
-                msg = msg_prefix;
                 msg +=
                   "There " + (checklist_len > 1 ? "are a few issues that need " : "is an issue that needs ") +
                   "to be resolved:\n";
@@ -171,7 +170,7 @@ jobs:
                   msg += "- " + c + " (" + checklist[c].join(", ") + ")\n";
                 msg += "\n> [!NOTE]\n> Please review [CONTRIBUTING.md](https://github.com/Dotmini/macroos/blob/main/CONTRIBUTING.md), then update and push your branch again.\n\n"
               } else {
-                msg = msg_prefix + "No Issues found.\n\n";
+                msg += "No Issues found.\n\n";
               }
               if (infolist_len != 0) {
                 msg += "Some of files have special handling:\n"
