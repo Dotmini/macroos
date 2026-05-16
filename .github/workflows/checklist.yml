@@ -170,7 +170,7 @@ jobs:
                   msg += "- " + c + " (" + checklist[c].join(", ") + ")\n";
                 msg += "\n> [!NOTE]\n> Please review [CONTRIBUTING.md](https://github.com/Dotmini/macroos/blob/main/CONTRIBUTING.md), then update and push your branch again.\n\n"
               } else {
-                msg += "No Issues found.\n\n";
+                msg = msg_prefix + "No Issues found.\n\n";
               }
               if (infolist_len != 0) {
                 msg += "Some of files have special handling:\n"
