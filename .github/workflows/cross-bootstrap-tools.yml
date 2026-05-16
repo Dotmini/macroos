@@ -40,6 +40,7 @@ jobs:
             target: arm64
     env:
       KERNCONF: GENERIC
+      RELEASE_ARTIFACT: ${{ startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64' }}
     steps:
       - uses: actions/checkout@v4
       - name: install packages (Ubuntu)
@@ -72,7 +73,7 @@ jobs:
       - name: make buildkernel
         run: ./tools/build/make.py --debug $EXTRA_BUILD_ARGS TARGET=${{ matrix.target }} TARGET_ARCH=${{ matrix.target_arch }} KERNCONF=$KERNCONF NO_MODULES=yes buildkernel -s -j$NPROC $EXTRA_MAKE_ARGS
       - name: Package kernel artifact
-        if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64'
+        if: env.RELEASE_ARTIFACT == 'true'
         run: |
           kernel_dir=$(find "$MAKEOBJDIRPREFIX" -maxdepth 10 -type d -path "*/sys/*/${KERNCONF}/kernel" | head -n 1)
           if [ -z "$kernel_dir" ]; then
@@ -81,7 +82,7 @@ jobs:
           fi
           tar -C "$kernel_dir" -czf macroos-kernel-${{ matrix.target_arch }}.tar.gz .
       - name: Upload kernel artifact
-        if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64'
+        if: env.RELEASE_ARTIFACT == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: macroos-kernel-${{ matrix.target_arch }}-${{ runner.os }}
