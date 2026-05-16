@@ -38,6 +38,8 @@ jobs:
             target: amd64
           - target_arch: aarch64
             target: arm64
+    env:
+      KERNCONF: GENERIC
     steps:
       - uses: actions/checkout@v4
       - name: install packages (Ubuntu)
@@ -68,13 +70,14 @@ jobs:
       - name: make kernel-toolchain
         run: ./tools/build/make.py --debug $EXTRA_BUILD_ARGS TARGET=${{ matrix.target }} TARGET_ARCH=${{ matrix.target_arch }} kernel-toolchain -s -j$NPROC -DWITH_DISK_IMAGE_TOOLS_BOOTSTRAP
       - name: make buildkernel
-        run: ./tools/build/make.py --debug $EXTRA_BUILD_ARGS TARGET=${{ matrix.target }} TARGET_ARCH=${{ matrix.target_arch }} KERNCONF=GENERIC NO_MODULES=yes buildkernel -s -j$NPROC $EXTRA_MAKE_ARGS
+        run: ./tools/build/make.py --debug $EXTRA_BUILD_ARGS TARGET=${{ matrix.target }} TARGET_ARCH=${{ matrix.target_arch }} KERNCONF=$KERNCONF NO_MODULES=yes buildkernel -s -j$NPROC $EXTRA_MAKE_ARGS
       - name: Package kernel artifact
         if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64'
         run: |
-          kernel_dir=$(find "$MAKEOBJDIRPREFIX" -type d -path "*/sys/*/GENERIC/kernel" | head -n 1)
+          kernconf="${KERNCONF:-GENERIC}"
+          kernel_dir=$(find "$MAKEOBJDIRPREFIX" -type d -path "*/sys/*/${kernconf}/kernel" | head -n 1)
           if [ -z "$kernel_dir" ]; then
-            echo "Kernel directory not found under $MAKEOBJDIRPREFIX" >&2
+            echo "Kernel directory for ${kernconf} not found under $MAKEOBJDIRPREFIX" >&2
             exit 1
           fi
           tar -C "$kernel_dir" -czf macroos-kernel-${{ matrix.target_arch }}.tar.gz .
