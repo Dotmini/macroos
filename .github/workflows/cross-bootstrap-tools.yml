@@ -1,8 +1,9 @@
-name: Cross-build Kernel
+name: MacroOS CI/CD Build
 
 on:
   push:
     branches: [ main, 'stable/[1-9][0-9]' ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -37,6 +38,9 @@ jobs:
             target: amd64
           - target_arch: aarch64
             target: arm64
+    env:
+      KERNCONF: GENERIC
+      RELEASE_ARTIFACT: ${{ startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64' && 'true' || 'false' }}
     steps:
       - uses: actions/checkout@v4
       - name: install packages (Ubuntu)
@@ -67,4 +71,31 @@ jobs:
       - name: make kernel-toolchain
         run: ./tools/build/make.py --debug $EXTRA_BUILD_ARGS TARGET=${{ matrix.target }} TARGET_ARCH=${{ matrix.target_arch }} kernel-toolchain -s -j$NPROC -DWITH_DISK_IMAGE_TOOLS_BOOTSTRAP
       - name: make buildkernel
-        run: ./tools/build/make.py --debug $EXTRA_BUILD_ARGS TARGET=${{ matrix.target }} TARGET_ARCH=${{ matrix.target_arch }} KERNCONF=GENERIC NO_MODULES=yes buildkernel -s -j$NPROC $EXTRA_MAKE_ARGS
+        run: ./tools/build/make.py --debug $EXTRA_BUILD_ARGS TARGET=${{ matrix.target }} TARGET_ARCH=${{ matrix.target_arch }} KERNCONF=$KERNCONF NO_MODULES=yes buildkernel -s -j$NPROC $EXTRA_MAKE_ARGS
+      - name: Package kernel artifact
+        if: env.RELEASE_ARTIFACT == 'true'
+        run: |
+          if [ -z "$MAKEOBJDIRPREFIX" ]; then
+            echo "MAKEOBJDIRPREFIX is not set" >&2
+            exit 1
+          fi
+          workspace_obj="${MAKEOBJDIRPREFIX}${GITHUB_WORKSPACE}"
+          kernel_dir="${workspace_obj}/sys/${KERNCONF}/kernel"
+          if [ ! -d "$kernel_dir" ]; then
+            search_root="$MAKEOBJDIRPREFIX"
+            if [ -d "$workspace_obj" ]; then
+              search_root="$workspace_obj"
+            fi
+            kernel_dir=$(find "$search_root" -maxdepth 20 -type d -path "*/sys/*/${KERNCONF}/kernel" | head -n 1)
+          fi
+          if [ -z "$kernel_dir" ] || [ ! -d "$kernel_dir" ]; then
+            echo "Kernel directory for ${KERNCONF} not found under $MAKEOBJDIRPREFIX" >&2
+            exit 1
+          fi
+          tar -C "$kernel_dir" -czf macroos-kernel-${{ matrix.target_arch }}.tar.gz .
+      - name: Upload kernel artifact
+        if: env.RELEASE_ARTIFACT == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macroos-kernel-${{ matrix.target_arch }}-${{ runner.os }}
+          path: macroos-kernel-${{ matrix.target_arch }}.tar.gz

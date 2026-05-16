@@ -1,37 +1,30 @@
-# Contribution Guidelines for GitHub
+# Contribution Guidelines for MacroOS
 
-## General Contributions to FreeBSD
+## General Contributions to MacroOS
 
-Please read the guidelines in [Contributing to FreeBSD](https://docs.freebsd.org/en/articles/contributing/)
-for all the ways you can contribute to the project, how the project is organized,
-how to build different parts of the project, etc. The
-[developer's handbook](https://docs.freebsd.org/en/books/developers-handbook/)
+MacroOS by Dotmini Software is based on FreeBSD. For broad contribution guidance
+(project organization, build basics, and workflows), please read
+[Contributing to FreeBSD](https://docs.freebsd.org/en/articles/contributing/).
+The [developer's handbook](https://docs.freebsd.org/en/books/developers-handbook/)
 is another useful resource.
 
-FreeBSD accepts source code contributions using one of several methods:
-- A GitHub [pull request](https://github.com/freebsd/freebsd-src/pulls)
-- A code review in [Phabricator](https://reviews.freebsd.org/differential)
-- An attachment on a [Bugzilla ticket](https://bugs.freebsd.org)
-- Direct access to the [Git repository](https://cgit.freebsd.org/src/)
+MacroOS accepts source code contributions via GitHub pull requests:
+https://github.com/Dotmini/macroos/pulls
 
-The preferred method depends on a few factors including the size or scope of
-the change.  GitHub pull requests are preferred for relatively straightforward
-changes where the contributor already has a GitHub account.
+Pull requests are preferred for relatively straightforward changes where the
+contributor already has a GitHub account.
 
-A change should be submitted by only one method.  For example, please do not
-open a GitHub pull request and create a Phabricator review for the same change
-(unless explicitly requested to do so by a FreeBSD committer). If asked to move
-from GitHub to Phabricator, please close the GitHub pull request adding the URL
-of the Phabricator review as a comment.
+A change should be submitted by only one method. Avoid duplicate submissions in
+other systems without maintainer guidance.
 
 ## GitHub Pull Requests
 
-The _freebsd-src_ GitHub repository is a **publish-only mirror** of the FreeBSD
-_src_ repository.  Pull Requests are accepted for **small, low-risk** changes
-that require minimal review and integration effort.
+The MacroOS GitHub repository is the primary collaboration repository. Pull
+Requests are accepted for **small, low-risk** changes that require minimal
+review and integration effort.
 
-For complex, controversial, security-related, or discussion-heavy changes, use
-the normal FreeBSD review and development process (described below) instead.
+For complex, controversial, security-related, or discussion-heavy changes,
+start a discussion with the maintainers before opening a pull request.
 
 Submit a Pull Request if your change:
 
@@ -59,7 +52,7 @@ Before submitting, ensure:
 
 #### Code Quality
 
-* The changes follow FreeBSD's style guide. See [Style](#Style).
+* The changes follow FreeBSD's style guide (used by MacroOS). See [Style](#Style).
 * _tools/build/checkstyle9.pl_ is run and:
   * All errors are fixed, **or**
   * Exceptions are documented in the PR.
@@ -73,7 +66,7 @@ Before submitting, ensure:
 
 * Each logical change is a **separate commit**.
 * Fixup commits are squashed into the commit they correct.
-* Each commit is suitable for direct inclusion in the FreeBSD's repository.
+* Each commit is suitable for direct inclusion in the MacroOS repository.
 * Pull Request scope must remain stable during review.  If feedback expands
   scope, create a new Pull Request.
 * Rebase your changes (and update with a forced push) when incorporating review
@@ -101,11 +94,11 @@ Each commit must:
 * Monitor your Pull Request and respond to review feedback promptly.
 * Pull Requests may be closed if there is no response for **one month**.
 
-### Additional Requirements for FreeBSD Committers
+### Additional Requirements for MacroOS Maintainers
 
-* Committers submitting Pull Requests are responsible for pushing their changes to the tree
+* Maintainers submitting Pull Requests are responsible for pushing their changes to the tree
   (including obtaining any required approvals).
-* Pull Requests opened by FreeBSD committers may be closed after one month
+* Pull Requests opened by MacroOS maintainers may be closed after one month
   unless there is a strong reason to keep them open.
 
 ### Quality Expectations
@@ -131,7 +124,7 @@ pseudonym, preferred name, chosen name or similar moniker that might not match
 relevant government records. We can accept your patch, as long as the name and
 email you use are distinctive, identifying, and not misleading. Please note that
 if your patch is accepted, the name and email address will become a permanent
-and immutable part of the public history of the FreeBSD source tree.
+and immutable part of the public history of the MacroOS source tree.
 
 The goal of this policy is to allow us to have sufficient information to contact
 you if questions arise about your contribution. Addresses of the form
