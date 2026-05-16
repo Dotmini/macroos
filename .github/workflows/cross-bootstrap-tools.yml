@@ -40,7 +40,7 @@ jobs:
             target: arm64
     env:
       KERNCONF: GENERIC
-      RELEASE_ARTIFACT: ${{ startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64' }}
+      RELEASE_ARTIFACT: ${{ startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64' && 'true' || 'false' }}
     steps:
       - uses: actions/checkout@v4
       - name: install packages (Ubuntu)
@@ -75,8 +75,11 @@ jobs:
       - name: Package kernel artifact
         if: env.RELEASE_ARTIFACT == 'true'
         run: |
-          kernel_dir=$(find "$MAKEOBJDIRPREFIX" -maxdepth 10 -type d -path "*/sys/*/${KERNCONF}/kernel" | head -n 1)
-          if [ -z "$kernel_dir" ]; then
+          kernel_dir="${MAKEOBJDIRPREFIX}${GITHUB_WORKSPACE}/sys/${KERNCONF}/kernel"
+          if [ ! -d "$kernel_dir" ]; then
+            kernel_dir=$(find "$MAKEOBJDIRPREFIX" -type d -path "*/sys/*/${KERNCONF}/kernel" | head -n 1)
+          fi
+          if [ -z "$kernel_dir" ] || [ ! -d "$kernel_dir" ]; then
             echo "Kernel directory for ${KERNCONF} not found under $MAKEOBJDIRPREFIX" >&2
             exit 1
           fi
