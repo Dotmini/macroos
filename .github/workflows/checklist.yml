@@ -13,7 +13,7 @@ permissions:
 jobs:
   checklist:
     name: commit
-    if: github.repository == 'freebsd/freebsd-src'
+    if: github.repository == 'Dotmini/macroos'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
@@ -156,7 +156,7 @@ jobs:
               }
             }
 
-            const msg_prefix = "Thank you for taking the time to contribute to FreeBSD!\n\n";
+            const msg_prefix = "Thank you for taking the time to contribute to MacroOS!\n\n";
             if (checklist_len != 0 || infolist_len != 0) {
               let msg = msg_prefix;
               let comment_func = comment_id == -1 ? github.rest.issues.createComment : github.rest.issues.updateComment;
@@ -168,7 +168,7 @@ jobs:
                 /* Loop for each key in "checklist". */
                 for (const c in checklist)
                   msg += "- " + c + " (" + checklist[c].join(", ") + ")\n";
-                msg += "\n> [!NOTE]\n> Please review [CONTRIBUTING.md](https://github.com/freebsd/freebsd-src/blob/main/CONTRIBUTING.md), then update and push your branch again.\n\n"
+                msg += "\n> [!NOTE]\n> Please review [CONTRIBUTING.md](https://github.com/Dotmini/macroos/blob/main/CONTRIBUTING.md), then update and push your branch again.\n\n"
               } else {
                 let msg = "No Issues found.\n\n";
               }

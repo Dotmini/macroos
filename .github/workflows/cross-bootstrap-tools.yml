@@ -1,8 +1,9 @@
-name: Cross-build Kernel
+name: MacroOS CI/CD Build
 
 on:
   push:
     branches: [ main, 'stable/[1-9][0-9]' ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -68,3 +69,18 @@ jobs:
         run: ./tools/build/make.py --debug $EXTRA_BUILD_ARGS TARGET=${{ matrix.target }} TARGET_ARCH=${{ matrix.target_arch }} kernel-toolchain -s -j$NPROC -DWITH_DISK_IMAGE_TOOLS_BOOTSTRAP
       - name: make buildkernel
         run: ./tools/build/make.py --debug $EXTRA_BUILD_ARGS TARGET=${{ matrix.target }} TARGET_ARCH=${{ matrix.target_arch }} KERNCONF=GENERIC NO_MODULES=yes buildkernel -s -j$NPROC $EXTRA_MAKE_ARGS
+      - name: Package kernel artifact
+        if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64'
+        run: |
+          kernel_dir=$(find "$MAKEOBJDIRPREFIX" -type d -path "*/sys/*/GENERIC/kernel" | head -n 1)
+          if [ -z "$kernel_dir" ]; then
+            echo "Kernel directory not found under $MAKEOBJDIRPREFIX" >&2
+            exit 1
+          fi
+          tar -C "$kernel_dir" -czf macroos-kernel-${{ matrix.target_arch }}.tar.gz .
+      - name: Upload kernel artifact
+        if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macroos-kernel-${{ matrix.target_arch }}-${{ runner.os }}
+          path: macroos-kernel-${{ matrix.target_arch }}.tar.gz
