@@ -74,7 +74,7 @@ jobs:
       - name: Package kernel artifact
         if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux' && matrix.target_arch == 'amd64'
         run: |
-          kernconf="${KERNCONF:-GENERIC}"
+          kernconf="$KERNCONF"
           kernel_dir=$(find "$MAKEOBJDIRPREFIX" -type d -path "*/sys/*/${kernconf}/kernel" | head -n 1)
           if [ -z "$kernel_dir" ]; then
             echo "Kernel directory for ${kernconf} not found under $MAKEOBJDIRPREFIX" >&2
